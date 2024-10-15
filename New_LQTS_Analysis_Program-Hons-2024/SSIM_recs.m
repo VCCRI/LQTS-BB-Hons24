@@ -8,8 +8,8 @@ function [sim_out] = SSIM_recs(post, pre, summary_data, plot_data)
 
 RR_index = 23; % summary_data index for median RR
 Tamp_index = 57;% summary_data index for  median TampRamp
-QTp_index = 3; % summary index for median QTp
-TpTd60_index = 69; % summary index for median TpTd70
+QTp_index = 3; % Summary index for median QTp
+TpTd60_index = 69; % Summary index for median TpTd70
 
 
 %% RRxTampRamp
@@ -20,7 +20,7 @@ set(gca, "XDir", "reverse"); % Only for RR intervals. Reverses x axis to be in d
 colormap('turbo');
 min = gcf;
 
-figure
+figure()
 smoothhist2D(plot_data.RRxTampRamp{pre}, [400,-0.25],[2000,1.25],3,[(2000-400)/5, 350],.05, 'image', 0);
 set(gca, "XDir", "reverse"); % Only for RR intervals. Reverses x axis to be in descending RR (ascending HR).
 colormap('turbo');
