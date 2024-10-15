@@ -8,4 +8,4 @@ There are two folders currently:
 
 Magic numbers in SSIM_recs using the repol savers. Pre-assigned the repol_savers size which is problematic if it changes. TODO: Fix such that summary_data and repol_savers are not magic numbers and then modify SSIM_recs to accept new modifications.
 
-Magic numbers also used in 
+Magic numbers also used in the assingment of nbins for pixel size of heatmaps - which are then used in difference_maps. Easy to fix, by assigning them as parameters in LQTS_Porgram_function instead (save it into ecg_analysis to pull it out of the function for difference_maps later).

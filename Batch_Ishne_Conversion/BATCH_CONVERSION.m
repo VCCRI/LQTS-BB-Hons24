@@ -5,7 +5,7 @@ inp_folder = uigetdir('.','Please select input folder...');
 out_folder = strcat(inp_folder,'\ArashFormats');
 mkdir(out_folder);
 
-% Extract a list of .ecg files in input folder
+% Extract a list of .ecg files in input folder.
 dirList = dir(strcat(inp_folder,'\*.ecg'));
 
 % Iterate through ecg file list and perform conversion
