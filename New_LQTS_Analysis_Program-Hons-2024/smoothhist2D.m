@@ -3,6 +3,7 @@ function [inlier_data, F, perimeter] = smoothhist2D(X,minv,maxv,lambda,nbins,out
 % maxv (where minv [minx miny] and maxv [maxx maxy]
 % ITAK: Modified so that the datapoints that make up the coloured heatmap
 % are output as inlier_data
+% ITAK: Modified so that th
 % SMOOTHHIST2D Plot a smoothed histogram of bivariate data.
 %   SMOOTHHIST2D(X,LAMBDA,NBINS) plots a smoothed histogram of the bivariate
 %   data in the N-by-2 matrix X.  Rows of X correspond to observations.  The
