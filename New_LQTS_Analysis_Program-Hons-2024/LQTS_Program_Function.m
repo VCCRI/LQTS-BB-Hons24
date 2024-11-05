@@ -4,11 +4,15 @@ function [ecg_analysis] = LQTS_Program_Function(file,name,named_out_folder, out_
 % defining ecg_data/ecg_analysis structures and condensing annotation/beat
 % detection functions
 
+leadn = 1; % Index of holter lead to analyse
+show_figure = 1; % Indicate whether to plot. 1 = yes. 
+
 qtpeak_lower_bound = 200; % PARAMETER: lower bound for qtpeak plot data in ms
 qtpeak_upper_bound = 750; % PARAMETER: upper bound for qtpeak plot data in ms
 rr_lower_bound = 400;   % PARAMETER: lower bound (higher heart rate) for the plot data in ms.
 rr_upper_bound = 2000;   % PARAMETER: Upper bound (lower heart rate) for the plot data in ms.
 zoom_mode = 1;          % PARAMETER: zoom_mode = 1 (default) zooms into the RR data range, zoom_mode = 2 does not zoom (400-2000ms)
+
 
 if zoom_mode ~= 1 & zoom_mode ~= 2
     warning("zoom_mode parameter must be 1 or 2");
@@ -31,10 +35,8 @@ ecg_data = load(file);
 sampling_rate = ecg_data.arash_Header.Sampling_Rate;
 
 
-%% Draw out points of analysis from ecg_data (RR interval, R amplitude, etc)
+%% Draw out points of analysis from ecg_data (RR interval, R amplitude, Tamp etc)
 
-leadn = 1; % Index of holter lead to analyse
-show_figure = 1; % Indicate whether to plot 
 ecg_analysis = analyse_ecg(ecg_data,leadn,show_figure, name);
 
 % Save the filtered ecg
