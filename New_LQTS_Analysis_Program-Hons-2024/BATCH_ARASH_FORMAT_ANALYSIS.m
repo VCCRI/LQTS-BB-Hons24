@@ -1,10 +1,10 @@
 % Prompts an input folder of input
 
 %% PARAMETERS
-diff_map.enter_mapping = 0; % Enter the difference mapping mode. 0 = no, 1 = yes
+diff_map.enter_mapping = 0; % Enter the difference mapping mode. 0 = no, 1 = yes. Make sure the input folder only has 2 .mat ecg files if you want to enter difference because it has to run through all the files before doing difference.
 diff_map.par = 'RR_QTp'; % 'RR_NRamp' % 'RR_Ramp' % 'RR_RampTamp' % 'Tamp_Ramp' % RR_TampRamp % 'RR_QTp' % 'QTp_Tamp' % 'QTp_TampRamp' % 'RR_TpTd70'
-diff_map.minuend = 2;% Choose the iteration number that you will subtract from. 1 is first recording, 2 is second recording, 3 is third recording, etc. Default = 2 
-diff_map.subtrahend = 1; % Choose the iteration number that will be subtracted from the minuend. 1 means first recording, i.e. minuend - 1st. 1 is 1st recording, 2 is 2nd recording, etc.
+diff_map.minuend = 2;% Choose the iteration number that you will subtract from. 1 is first recording, 2 is second recording Default = 2. If doing timescale, put the more recent recording as minuend. If doing pre/post therapy, do post-therapy as minuend.
+diff_map.subtrahend = 1; % Choose the iteration number that will be subtracted from the minuend. 1 means first recording, i.e. minuend - 1st. 1 is 1st recording, 2 is 2nd recording, etc. If doing timescale, put the earlier recording as subtrahend. If doing pre/post therapy, do pre-therapy as subtrahend.
 
 % END Parameters
 
@@ -21,6 +21,9 @@ errorfiles = [];
 % Initiate table for holter parameters saving parametersl
 parameters = table();
 
+% What is Feiler? Feiler is a matrix the same size as the pixelsxpixels of
+% the heatmap. Each value approximates the proportion of beats that fall in
+% that pixel of the heatmap. THe sum of all the values is 1.
 % preparing difference heatmaps struc - will populate with F from each iteration of smoothhist2d (saved in ecg_analysis.Feiler)to become a multimensional array.
 all_feilers = struct();
 all_feilers.RR_NRamp = [];
@@ -36,7 +39,10 @@ all_feilers.RR_TpTd70 = [];
 
 
 % Prepare for the variable saving (for my figures) % If commented, Need to
-% also comment out saving repol section in LQTS_Program_Function
+% also comment out saving repol section in LQTS_Program_Function. If adding
+% or removing variables, change the size of repol_vars and also check
+% SSIM_recs indices will not be impacted. TODO: Find another way to assign
+% this without magic numbers.
 % repol_vars = zeros(1, 93);
 % save(strcat(out_folder,'\repol_savers.mat'),"repol_vars");
 
@@ -81,12 +87,13 @@ if diff_map.enter_mapping == 1
     savetitle = "difference map " + dirList(diff_map.minuend).name(1:end-4) + " - " + dirList(diff_map.subtrahend).name(1:end-4) + " " + diff_map.par;
     % % saveas(gcf,strcat(named_out_folder,filesep, savetitle));
     % % saveas(gcf,strcat(named_out_folder,filesep, savetitle + ".png"));
-  close all
+    
+    % extracting SSIM and displacement vectors for selected paired data
+    [similarity.score] = SSIM_recs(2, 1, summary_data, plot_data);
+    % save(strcat(out_folder, filesep, 'similarity.mat'), "similarity");
+    close all
 else
 end
 
-% extracting SSIM and displacement vectors for selected paired data
-%% LQT1
-% [similarity.pt_test] = SSIM_recs(2, 1, summary_data, plot_data);
-% 
-% save(strcat(out_folder, filesep, 'similarity.mat'), "similarity");
+
+

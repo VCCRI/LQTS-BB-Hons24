@@ -1,5 +1,8 @@
 function [outputArg1,outputArg2] = difference_maps(minuend, subtrahend, minuend_name, subtrahend_name, all_feilers, par, m)
-%DIFFERENCE_MAPS Summary of this function goes here
+%DIFFERENCE_MAPS Makes a difference map minuend - subtrahend where minuend
+%will be the red and subtrahend will be blue.
+
+%% nbins size needs to be changed so its no longer magic numbers. This is done easily by pre-assigning sizes as parameters in LQTS_Program_FUnction and changing the inputs for all smoothhist2d, and also modifying this function so it takes the parameters instead of magic numbers of xlinsptickmax etc
 
 % USER MUST CHOOSE WHICH HEATMAPS ARE PRE AND POST/WHICH heatmaps to
 % compare.

@@ -1,14 +1,18 @@
 function [ecg_analysis] = LQTS_Program_Function(file,name,named_out_folder, out_folder)
 
-% Following logic of originalL QTS_Program_Function, created by saa, but 
+% Following logic of original LQTS_Program_Function, created by saa, but 
 % defining ecg_data/ecg_analysis structures and condensing annotation/beat
 % detection functions
+
+leadn = 1; % Index of holter lead to analyse
+show_figure = 1; % Indicate whether to plot. 1 = yes. 
 
 qtpeak_lower_bound = 200; % PARAMETER: lower bound for qtpeak plot data in ms
 qtpeak_upper_bound = 750; % PARAMETER: upper bound for qtpeak plot data in ms
 rr_lower_bound = 400;   % PARAMETER: lower bound (higher heart rate) for the plot data in ms.
 rr_upper_bound = 2000;   % PARAMETER: Upper bound (lower heart rate) for the plot data in ms.
 zoom_mode = 1;          % PARAMETER: zoom_mode = 1 (default) zooms into the RR data range, zoom_mode = 2 does not zoom (400-2000ms)
+
 
 if zoom_mode ~= 1 & zoom_mode ~= 2
     warning("zoom_mode parameter must be 1 or 2");
@@ -31,10 +35,8 @@ ecg_data = load(file);
 sampling_rate = ecg_data.arash_Header.Sampling_Rate;
 
 
-%% Draw out points of analysis from ecg_data (RR interval, R amplitude, etc)
+%% Draw out points of analysis from ecg_data (RR interval, R amplitude, Tamp etc)
 
-leadn = 1; % Index of holter lead to analyse
-show_figure = 1; % Indicate whether to plot 
 ecg_analysis = analyse_ecg(ecg_data,leadn,show_figure, name);
 
 % Save the filtered ecg
@@ -131,7 +133,7 @@ time = beat_time_stamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 % elseif size(ecg_analys.Ramp,2) == size(ecg_analysis.RRint,2)
 %     R_amplitude = ecg_analysis.Ramp;
 % end
-% norm_R_amplitude = normalize(R_amplitude, 'center', 'median', 'scale', 'iqr');  % Normalising to the median and IQR (not mean, do you want to change?)
+% norm_R_amplitude = normalize(R_amplitude, 'center', 'median', 'scale', 'iqr');  % Normalising to the median and IQR
 % 
 % 
 % total_plot_data(:,1) = rr_int(rr_int <= rr_upper_bound & rr_int >= rr_lower_bound);
@@ -178,15 +180,15 @@ time = beat_time_stamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 % total_plot_data(:,1) = rr_int(rr_int <= rr_upper_bound & rr_int >= rr_lower_bound);
 % total_plot_data(:,2) = R_amplitude(rr_int <= rr_upper_bound & rr_int >= rr_lower_bound);
 % 
-% total_plot_data(total_plot_data(:,2) < 0 | total_plot_data(:,2) > 350, :) = []; % Removes values outside of defined smoothhist2d range 
-% total_plot_data(any(isnan(total_plot_data),2),:) = []; % Removes all rows with at least 1 NaN
+% total_plot_data(total_plot_data(:,2) < 0 | total_plot_data(:,2) > 350, :) = []; 
+% total_plot_data(any(isnan(total_plot_data),2),:) = []; 
 % figure("WindowState", "maximized")
 % if zoom_mode == 2
 %     [inlier_data, ecg_analysis.Feiler.RR_Ramp, RRxRamp_perimeter] = smoothhist2D(total_plot_data,[400,0],[2000,350],3,[(2000-400)/5, 350],.05, 'image', 0);
 % else
 %     [inlier_data, ecg_analysis.Feiler.RR_Ramp, RRxRamp_perimeter] = smoothhist2D(total_plot_data,[rr_lower_bound,0],[rr_upper_bound,350],3,[(rr_upper_bound - rr_lower_bound)/5, 350],.05, 'image', 0);
 % end
-% set(gca, "XDir", "reverse"); % Only for RR intervals. Reverses x axis to be in descending RR (ascending HR).
+% set(gca, "XDir", "reverse"); % Only for RR intervals.
 % colormap('turbo');
 % %Linear Regression
 % hold on
@@ -227,15 +229,15 @@ time = beat_time_stamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 % total_plot_data(:,1) = rr_int((rr_int >=rr_lower_bound) & (rr_int <=rr_upper_bound));
 % total_plot_data(:,2) = RampTamp((rr_int >=rr_lower_bound) & (rr_int <=rr_upper_bound));
 % 
-% total_plot_data(total_plot_data(:,2) < -25 | total_plot_data(:,2) > 25, :) = []; % Removes values outside of defined smoothhist2d range 
-% total_plot_data(any(isnan(total_plot_data),2),:) = []; % Removes all rows with at least 1 NaN
+% total_plot_data(total_plot_data(:,2) < -25 | total_plot_data(:,2) > 25, :) = []; 
+% total_plot_data(any(isnan(total_plot_data),2),:) = [];
 % figure("WindowState", "maximized")
 % if zoom_mode == 2
 %     [inlier_data,ecg_analysis.Feiler.RR_RampTamp, RRxRampTamp_perimeter] = smoothhist2D(total_plot_data,[400,-25],[2000,25],3,[(2000-400)/5, 500],.05, 'image', 0);
 % else
 %     [inlier_data,ecg_analysis.Feiler.RR_RampTamp, RRxRampTamp_perimeter] = smoothhist2D(total_plot_data,[rr_lower_bound,-25],[rr_upper_bound,25],3,[(rr_upper_bound - rr_lower_bound)/5, 500],.05, 'image', 0);
 % end
-% set(gca, "XDir", "reverse"); % Only for RR intervals. Reverses x axis to be in descending RR (ascending HR).
+% set(gca, "XDir", "reverse"); % Only for RR intervals. 
 % colormap('turbo');
 % %Linear Regression
 % hold on
@@ -244,7 +246,7 @@ time = beat_time_stamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 % h(1).Visible = 0;
 % legend("", "Linear Fit", "Confidence Bounds", "", "Location", "northeast");
 % cb = colorbar;
-% cb.Title.String = "Beat Density (8-bit color)";
+% cb.Title.String = "Beat Density (8-bit color)"; % Scale is 0 to 255 same as 8-bit colour.
 % xlabel('RR interval (ms)');
 % ylabel('Ramp/Tamp');
 % title(['RR interval vs Ramp/Tamp full plot, Recording ' name]);
@@ -273,8 +275,8 @@ time = beat_time_stamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 % % Total
 % total_plot_data(:,1) = T_amplitude((rr_int <= rr_upper_bound) & (rr_int >= rr_lower_bound));
 % total_plot_data(:,2) = R_amplitude((rr_int <= rr_upper_bound) & (rr_int >= rr_lower_bound));
-% total_plot_data(total_plot_data(:,1) < -100 | total_plot_data(:,1) > 200, :) = []; % Removes values outside of defined smoothhist2d range 
-% total_plot_data(total_plot_data(:,2) < -50 | total_plot_data(:,2) > 350, :) = []; % Removes values outside of defined smoothhist2d range 
+% total_plot_data(total_plot_data(:,1) < -100 | total_plot_data(:,1) > 200, :) = []; 
+% total_plot_data(total_plot_data(:,2) < -50 | total_plot_data(:,2) > 350, :) = [];
 % total_plot_data(any(isnan(total_plot_data),2),:) = []; % Removes all rows with at least 1 NaN
 % figure("WindowState", "maximized")
 %     [inlier_data, ecg_analysis.Feiler.Tamp_Ramp, TampxRamp_perimeter] = smoothhist2D(total_plot_data,[-100 -50],[200,350],3,[300, 400],.05, 'image', 0);
@@ -329,8 +331,8 @@ TampRamp = T_amplitude ./ R_amplitude;
 total_plot_data(:,1) = rr_int((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 total_plot_data(:,2) = TampRamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 
-total_plot_data(total_plot_data(:,2) < -0.25 | total_plot_data(:,2) > 1.25, :) = []; % Removes values outside of defined smoothhist2d range 
-total_plot_data(any(isnan(total_plot_data),2),:) = []; % Removes all rows with at least 1 NaN
+total_plot_data(total_plot_data(:,2) < -0.25 | total_plot_data(:,2) > 1.25, :) = []; 
+total_plot_data(any(isnan(total_plot_data),2),:) = [];
 ecg_analysis.PD.RRxTampRamp = total_plot_data;
 figure %("WindowState", "maximized")
 if zoom_mode == 2
@@ -338,7 +340,7 @@ if zoom_mode == 2
 else
     [inlier_data, ecg_analysis.Feiler.RR_TampRamp, RRxTampRamp_perimeter] = smoothhist2D(total_plot_data,[rr_lower_bound,-0.2],[rr_upper_bound,0.6],3,[(rr_upper_bound - rr_lower_bound)/5, 80],.05, 'image', 0);
 end
-set(gca, "XDir", "reverse"); % Only for RR intervals. Reverses x axis to be in descending RR (ascending HR).
+set(gca, "XDir", "reverse"); % Only for RR intervals.
 colormap('turbo');
 
 
@@ -380,7 +382,7 @@ clear total_plot_data day_plot_data night_plot_data;
 total_plot_data(:,1) = sec_rr_int((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 total_plot_data(:,2) = qtp_int((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 
-total_plot_data(total_plot_data(:,2) < qtpeak_lower_bound | total_plot_data(:,2) > qtpeak_upper_bound, :) = []; % Removes values outside of defined smoothhist2d range 
+total_plot_data(total_plot_data(:,2) < qtpeak_lower_bound | total_plot_data(:,2) > qtpeak_upper_bound, :) = []; 
 total_plot_data(any(isnan(total_plot_data),2),:) = []; % Removes all rows with at least 1 NaN
 
 ecg_analysis.PD.RRxQTp = total_plot_data;
@@ -390,7 +392,7 @@ if zoom_mode == 2
 else
     [inlier_data, ecg_analysis.Feiler.RR_QTp, RRxQTp_perimeter] = smoothhist2D(total_plot_data,[rr_lower_bound/1000,qtpeak_lower_bound],[rr_upper_bound/1000,qtpeak_upper_bound],3,[(rr_upper_bound - rr_lower_bound)/5, (qtpeak_upper_bound-qtpeak_lower_bound)/5],.05, 'image', 0);
 end
-set(gca, "XDir", "reverse"); % Only for RR intervals. Reverses x axis to be in descending RR (ascending HR).
+set(gca, "XDir", "reverse"); % Only for RR intervals.
 colormap('turbo');
 hold on
 
@@ -454,9 +456,9 @@ TampRamp = T_amplitude ./ R_amplitude;
 % Total
 total_plot_data(:,1) = qtp_int((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 total_plot_data(:,2) = TampRamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
-total_plot_data(total_plot_data(:,1) < 200 | total_plot_data(:,1) > 750, :) = []; % Removes values outside of defined smoothhist2d range
-total_plot_data(total_plot_data(:,2) < -0.25 | total_plot_data(:,2) > 1.25, :) = []; % Removes values outside of defined smoothhist2d range 
-total_plot_data(any(isnan(total_plot_data),2),:) = []; % Removes all rows with at least 1 NaN
+total_plot_data(total_plot_data(:,1) < 200 | total_plot_data(:,1) > 750, :) = []; 
+total_plot_data(total_plot_data(:,2) < -0.25 | total_plot_data(:,2) > 1.25, :) = []; 
+total_plot_data(any(isnan(total_plot_data),2),:) = [];
 ecg_analysis.PD.QTpxTampRamp = total_plot_data;
 figure %("WindowState", "maximized")
 [inlier_data, ecg_analysis.Feiler.QTp_TampRamp, QTpxTampRamp_perimeter] = smoothhist2D(total_plot_data,[qtpeak_lower_bound,-0.2],[qtpeak_upper_bound,0.6],3,[(qtpeak_upper_bound-qtpeak_lower_bound)/5, 80],.05, 'image', 0);
@@ -500,9 +502,9 @@ T_amplitude = ecg_analysis.Tamp;
 % Total
 total_plot_data(:,1) = qtp_int((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 total_plot_data(:,2) = T_amplitude((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
-total_plot_data(total_plot_data(:,1) < 200 | total_plot_data(:,1) > 750, :) = []; % Removes values outside of defined smoothhist2d range
-total_plot_data(total_plot_data(:,2) < -50 | total_plot_data(:,2) > 200, :) = []; % Removes values outside of defined smoothhist2d range 
-total_plot_data(any(isnan(total_plot_data),2),:) = []; % Removes all rows with at least 1 NaN
+total_plot_data(total_plot_data(:,1) < 200 | total_plot_data(:,1) > 750, :) = []; 
+total_plot_data(total_plot_data(:,2) < -50 | total_plot_data(:,2) > 200, :) = []; 
+total_plot_data(any(isnan(total_plot_data),2),:) = []; 
 figure("WindowState", "maximized")
 [inlier_data, ecg_analysis.Feiler.QTp_Tamp, QTpxTamp_perimeter] = smoothhist2D(total_plot_data,[qtpeak_lower_bound,-50],[qtpeak_upper_bound,200],3,[(qtpeak_upper_bound-qtpeak_lower_bound)/5, 250],.05, 'image', 0);
 colormap('turbo');
@@ -539,8 +541,8 @@ Tp_Td70 = (ecg_analysis.TPars.postpeak_t70_loc - ecg_analysis.Tloc) .* (1000 / s
 total_plot_data(:,1) = sec_rr_int((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 total_plot_data(:,2) = Tp_Td70((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound));
 
-total_plot_data(total_plot_data(:,2) < 0 | total_plot_data(:,2) > 150, :) = []; % Removes values outside of defined smoothhist2d range 
-total_plot_data(any(isnan(total_plot_data),2),:) = []; % Removes all rows with at least 1 NaN
+total_plot_data(total_plot_data(:,2) < 0 | total_plot_data(:,2) > 150, :) = []; 
+total_plot_data(any(isnan(total_plot_data),2),:) = []; 
 ecg_analysis.PD.RRxTpTd70 = total_plot_data;
 figure %("WindowState", "maximized")
 if zoom_mode == 2
@@ -548,7 +550,7 @@ if zoom_mode == 2
 else
     [inlier_data, ecg_analysis.Feiler.RR_TpTd70, RRxTpTd70_perimeter] = smoothhist2D(total_plot_data,[rr_lower_bound/1000,0],[rr_upper_bound/1000,150],3,[(rr_upper_bound - rr_lower_bound)/5, 150],.05, 'image', 0);
 end
-set(gca, "XDir", "reverse"); % Only for RR intervals. Reverses x axis to be in descending RR (ascending HR).
+set(gca, "XDir", "reverse"); % Only for RR intervals.
 colormap('turbo');
 hold on
 
@@ -604,10 +606,10 @@ clear total_plot_data day_plot_data night_plot_data;
 
 % Histogram for QTpeak
 figure('WindowState', "maximized")
-histogram(ecg_analysis.QTpeak((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [qtpeak_lower_bound:5:qtpeak_upper_bound], 'FaceColor', 'black', 'FaceAlpha', 0.3, "EdgeAlpha", 0.3);
+histogram(ecg_analysis.QTpeak((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [qtpeak_lower_bound:5:qtpeak_upper_bound], 'FaceColor', 'black', 'FaceAlpha', 0.3, "EdgeAlpha", 0.3); % All Beats
 hold on
-histogram(ecg_analysis.QTpeak((rr_int <= 1000) & (rr_int >=909)), [qtpeak_lower_bound:5:qtpeak_upper_bound], "FaceColor", "blue", "FaceAlpha", 0.4, "EdgeAlpha", 0.4);
-histogram(ecg_analysis.QTpeak((rr_int <= 714) & (rr_int >=666)), [qtpeak_lower_bound:5:qtpeak_upper_bound], "FaceColor", "red", "FaceAlpha", 0.6, "EdgeAlpha", 0.4);
+histogram(ecg_analysis.QTpeak((rr_int <= 1000) & (rr_int >=909)), [qtpeak_lower_bound:5:qtpeak_upper_bound], "FaceColor", "blue", "FaceAlpha", 0.4, "EdgeAlpha", 0.4);% Slow Beats
+histogram(ecg_analysis.QTpeak((rr_int <= 714) & (rr_int >=666)), [qtpeak_lower_bound:5:qtpeak_upper_bound], "FaceColor", "red", "FaceAlpha", 0.6, "EdgeAlpha", 0.4); % Fast Beats
 legend("All beats (30-150bpm)", "Slow Heart Rate (60-66bpm)", "Fast Heart Rate (84-90bpm)", "Location", "northeast")
 xlabel("Q-Tpeak interval (ms)");
 title(["Q-Tpeak interval histogram, Recording " name]);
@@ -620,7 +622,7 @@ hold off
 
 histogram(ecg_analysis.RRint, [400:40:2000]);
 hold on
-histogram(ecg_analysis.RRint((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [400:40:2000]);
+histogram(ecg_analysis.RRint((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [400:40:2000]); % All Beats
 xlabel("RR interval (ms)");
 title(["RR interval histogram, Recording " name]);
 % % saveas(gcf,strcat(named_out_folder,filesep,'RR interval histogram.png'));
@@ -629,7 +631,7 @@ hold off
 % % Histogram for Ramp
 % histogram(ecg_analysis.Ramp, [-50:5:350]);
 % hold on
-% histogram(ecg_analysis.Ramp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [-50:5:350]);
+% histogram(ecg_analysis.Ramp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [-50:5:350]); % All Beats
 % xlabel("R amplitude (units?)");
 % title(["R amplitude histogram, Recording " name]);
 % % % saveas(gcf,strcat(named_out_folder,filesep,'R amplitude histogram.png'));
@@ -638,7 +640,7 @@ hold off
 % % Histogram for Tamp
 % histogram(ecg_analysis.Tamp, [-100:3:200]);
 % hold on
-% histogram(ecg_analysis.Tamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [-100:3:200]);
+% histogram(ecg_analysis.Tamp((rr_int <=rr_upper_bound) & (rr_int>=rr_lower_bound)), [-100:3:200]); % All Beats
 % xlabel("T amplitude (units)");
 % title(["T amplitude histogram, Recording " name]);
 % % % saveas(gcf,strcat(named_out_folder,filesep,'T amplitude histogram.png'));
@@ -647,10 +649,10 @@ hold off
 
 % % Histogram for TampRamp
 figure('WindowState', "maximized")
-histogram(TampRamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [-0.25:0.025:1.25], 'FaceColor', 'black', 'FaceAlpha', 0.3, "EdgeAlpha", 0.3);
+histogram(TampRamp((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [-0.25:0.025:1.25], 'FaceColor', 'black', 'FaceAlpha', 0.3, "EdgeAlpha", 0.3); % All Beats
 hold on
-histogram(TampRamp((rr_int <= 1000) & (rr_int >=909)), [-0.25:0.025:1.25], "FaceColor", "blue", "FaceAlpha", 0.4, "EdgeAlpha", 0.4);
-histogram(TampRamp((rr_int <= 714) & (rr_int >=666)), [-0.25:0.025:1.25], "FaceColor", "red", "FaceAlpha", 0.6, "EdgeAlpha", 0.4);
+histogram(TampRamp((rr_int <= 1000) & (rr_int >=909)), [-0.25:0.025:1.25], "FaceColor", "blue", "FaceAlpha", 0.4, "EdgeAlpha", 0.4);% Slow Beats
+histogram(TampRamp((rr_int <= 714) & (rr_int >=666)), [-0.25:0.025:1.25], "FaceColor", "red", "FaceAlpha", 0.6, "EdgeAlpha", 0.4);% Fast Beats
 legend("All beats (30-150bpm)", "Slow Heart Rate (60-66bpm)", "Fast Heart Rate (84-90bpm)", "Location", "northeast")
 xlabel("T amplitude/R amplitude");
 title(["T amplitude/R amplitude histogram, Recording " name]);
@@ -660,10 +662,10 @@ hold off
 
 % % Histogram for TpTd70
 figure('WindowState', "maximized")
-histogram(Tp_Td70((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [0:1.25:150], 'FaceColor', 'black', 'FaceAlpha', 0.3, "EdgeAlpha", 0.3);
+histogram(Tp_Td70((rr_int <=rr_upper_bound) & (rr_int >=rr_lower_bound)), [0:1.25:150], 'FaceColor', 'black', 'FaceAlpha', 0.3, "EdgeAlpha", 0.3);% All Beats
 hold on
-histogram(Tp_Td70((rr_int <= 1000) & (rr_int >=909)), [0:1.25:150], "FaceColor", "blue", "FaceAlpha", 0.4, "EdgeAlpha", 0.4);
-histogram(Tp_Td70((rr_int <= 714) & (rr_int >=666)), [0:1.25:150], "FaceColor", "red", "FaceAlpha", 0.6, "EdgeAlpha", 0.4);
+histogram(Tp_Td70((rr_int <= 1000) & (rr_int >=909)), [0:1.25:150], "FaceColor", "blue", "FaceAlpha", 0.4, "EdgeAlpha", 0.4);% Slow Beats
+histogram(Tp_Td70((rr_int <= 714) & (rr_int >=666)), [0:1.25:150], "FaceColor", "red", "FaceAlpha", 0.6, "EdgeAlpha", 0.4);% Fast Beats
 legend("All beats (30-150bpm)", "Slow Heart Rate (60-66bpm)", "Fast Heart Rate (84-90bpm)", "Location", "northeast")
 xlabel("T_p_e_a_k to T_d_,_7_0 interval (ms)");
 title(["T_p_e_a_k to T_d_,_7_0 interval histogram, Recording " name]);
@@ -681,6 +683,8 @@ in_TpTd70 = inliers.secRR_TpTd70(:,2);
 
 
 %% START REPOL SAVING % If uncommenting, ensure relevant code also uncommented in BATCH_ARASH_FORMAT_ANALYSIS
+%% TODO: FIgure out another way to save these so that SSIM_recs later on will not rely on magic index numbers and also such that the pre-assigned zeros for repol_vars is always the right size.
+%% If changing the size on this before fixing please also change the zeros size for repol_vars in BATCH_ARASH_FORMAT_ANALYSIS and the locations of the SSIM_rec calls.
 % %% Load Items we want to save
 % 
 % % Col 1: Name of recording

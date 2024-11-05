@@ -438,21 +438,23 @@ if (show_figure == 1)
     t = get_time(1:length(raw_ecg),sample_rate);
     plot(t,filtered_ecg);
     
-    % hold on;plot(get_time(ecg_analysis.Beatstart(events == 1),sample_rate),filtered_ecg(ecg_analysis.Beatstart(events == 1)),'r*');
-    % hold on;plot(get_time(ecg_analysis.Beatstart(events == 0),sample_rate),filtered_ecg(ecg_analysis.Beatstart(events == 0)),'b*');
-    % hold on;plot(get_time(ecg_analysis.Beatstart(ectopic_events == 0),sample_rate),filtered_ecg(ecg_analysis.Beatstart(ectopic_events == 0)),'r*');
-    % hold on;plot(get_time(r_peak_list(events == 0),sample_rate),filtered_ecg(r_peak_list(events == 0)),'g*');
-    % hold on;plot(get_time(r_min_list(events == 0),sample_rate),filtered_ecg(r_min_list(events == 0)),'g*');
-        % hold on;plot(get_time(t_split.prepeak_t50_loc(~isnan(t_split.prepeak_t50_loc)),sample_rate),t_split.t50_height(~isnan(t_split.prepeak_t50_loc)),'k*')
-        % hold on;plot(get_time(t_split.postpeak_t50_loc(~isnan(t_split.postpeak_t50_loc)),sample_rate),t_split.t50_height(~isnan(t_split.postpeak_t50_loc)),'m*')
-        % hold on;plot(get_time(t_split.postpeak_t30_loc(~isnan(t_split.postpeak_t30_loc)),sample_rate),t_split.t30_height(~isnan(t_split.postpeak_t30_loc)),'r*')
-        % hold on;plot(get_time(t_split.prepeak_t30_loc(~isnan(t_split.prepeak_t30_loc)),sample_rate),t_split.t30_height(~isnan(t_split.prepeak_t30_loc)),'b*')
-        % hold on;plot(get_time(t_split.prepeak_t70_loc(~isnan(t_split.prepeak_t70_loc)),sample_rate),t_split.t70_height(~isnan(t_split.prepeak_t70_loc)),'g*')
-        % hold on;plot(get_time(t_split.postpeak_t70_loc(~isnan(t_split.postpeak_t70_loc)),sample_rate),t_split.t70_height(~isnan(t_split.postpeak_t70_loc)),'c*')
-    % hold on;plot(get_time(t_peak_list(events == 0),sample_rate),filtered_ecg(t_peak_list(events == 0)),'k*');
-    % hold on;plot(get_time(ecg_analysis.Beatstart(events == 0),sample_rate),filtered_ecg(ecg_analysis.Beatstart(events == 0)),'r*');
-    % hold on;plot(get_time(q_list(events == 0),sample_rate),filtered_ecg(q_list(events == 0)),'b*');
-    % input('Press ENTER to continue...');
+    %% Choose up to 4 to plot at one time by uncommenting
+
+    hold on;plot(get_time(ecg_analysis.Beatstart(events == 1),sample_rate),filtered_ecg(ecg_analysis.Beatstart(events == 1)),'r*');
+    hold on;plot(get_time(ecg_analysis.Beatstart(events == 0),sample_rate),filtered_ecg(ecg_analysis.Beatstart(events == 0)),'b*');
+    hold on;plot(get_time(ecg_analysis.Beatstart(ectopic_events == 0),sample_rate),filtered_ecg(ecg_analysis.Beatstart(ectopic_events == 0)),'r*');
+    hold on;plot(get_time(r_peak_list(events == 0),sample_rate),filtered_ecg(r_peak_list(events == 0)),'g*'); % R peaks
+    hold on;plot(get_time(r_min_list(events == 0),sample_rate),filtered_ecg(r_min_list(events == 0)),'g*'); % R mins
+    hold on;plot(get_time(t_split.prepeak_t50_loc(~isnan(t_split.prepeak_t50_loc)),sample_rate),t_split.t50_height(~isnan(t_split.prepeak_t50_loc)),'k*'); % Tu50
+    hold on;plot(get_time(t_split.postpeak_t50_loc(~isnan(t_split.postpeak_t50_loc)),sample_rate),t_split.t50_height(~isnan(t_split.postpeak_t50_loc)),'m*'); % Td50
+    hold on;plot(get_time(t_split.prepeak_t30_loc(~isnan(t_split.prepeak_t30_loc)),sample_rate),t_split.t30_height(~isnan(t_split.prepeak_t30_loc)),'b*'); % Tu30
+    hold on;plot(get_time(t_split.postpeak_t30_loc(~isnan(t_split.postpeak_t30_loc)),sample_rate),t_split.t30_height(~isnan(t_split.postpeak_t30_loc)),'r*'); % Td30
+    hold on;plot(get_time(t_split.prepeak_t70_loc(~isnan(t_split.prepeak_t70_loc)),sample_rate),t_split.t70_height(~isnan(t_split.prepeak_t70_loc)),'g*'); % Tu70
+    hold on;plot(get_time(t_split.postpeak_t70_loc(~isnan(t_split.postpeak_t70_loc)),sample_rate),t_split.t70_height(~isnan(t_split.postpeak_t70_loc)),'c*'); % Td70
+    hold on;plot(get_time(t_peak_list(events == 0),sample_rate),filtered_ecg(t_peak_list(events == 0)),'k*'); % Tpeak
+    hold on;plot(get_time(ecg_analysis.Beatstart(events == 0),sample_rate),filtered_ecg(ecg_analysis.Beatstart(events == 0)),'r*'); 
+    hold on;plot(get_time(q_list(events == 0),sample_rate),filtered_ecg(q_list(events == 0)),'b*'); % Qstart
+    input('Press ENTER to continue...');
      close all
 end
 
